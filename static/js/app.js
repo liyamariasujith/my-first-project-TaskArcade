@@ -38,6 +38,16 @@ function initApp() {
 }
 
 function setupEventListeners() {
+    // Sidebar Minimize Toggle
+    const sidebar = document.getElementById('app-sidebar');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    if (sidebar && sidebarToggleBtn) {
+        sidebarToggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('minimized');
+            localStorage.setItem('sidebar-minimized', sidebar.classList.contains('minimized') ? 'true' : 'false');
+        });
+    }
+
     // Tab switching
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
@@ -128,6 +138,48 @@ function setupEventListeners() {
     
     // Initialize Games listeners once
     initGamesSectionListeners();
+
+    // Welcome Modal Initialization & Form Submission
+    const welcomeModal = document.getElementById('welcome-modal');
+    const welcomeInput = document.getElementById('welcome-name-input');
+    const welcomeSubmit = document.getElementById('welcome-submit-btn');
+    
+    if (welcomeModal && welcomeInput && welcomeSubmit) {
+        // Show welcome modal if no name is saved in localStorage
+        const savedName = localStorage.getItem('user-welcome-name');
+        if (!savedName) {
+            welcomeModal.classList.remove('hidden');
+        }
+        
+        const handleWelcomeSubmit = () => {
+            const enteredName = welcomeInput.value.trim();
+            if (enteredName) {
+                localStorage.setItem('user-welcome-name', enteredName);
+                if (currentUser) {
+                    currentUser.name = enteredName;
+                    setCurrentUser(currentUser);
+                }
+                welcomeModal.classList.add('hidden');
+            } else {
+                welcomeInput.focus();
+                // Brief error highlight styling
+                welcomeInput.style.borderColor = '#EF4444';
+                welcomeInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+                setTimeout(() => {
+                    welcomeInput.style.borderColor = 'var(--border-color)';
+                    welcomeInput.style.boxShadow = 'none';
+                }, 1000);
+            }
+        };
+        
+        welcomeSubmit.addEventListener('click', handleWelcomeSubmit);
+        
+        welcomeInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleWelcomeSubmit();
+            }
+        });
+    }
 }
 
 function switchTab(tabName) {
@@ -178,6 +230,13 @@ function fetchUsers() {
             populateUserSwitcherDropdown();
             // Default User: Liam Carter (id: 1)
             const defaultUser = allUsers.find(u => u.id === '1') || allUsers[0];
+            
+            // Apply saved welcome name if present
+            const savedName = localStorage.getItem('user-welcome-name');
+            if (savedName) {
+                defaultUser.name = savedName;
+            }
+            
             setCurrentUser(defaultUser);
         })
         .catch(err => console.error('Error fetching users:', err));

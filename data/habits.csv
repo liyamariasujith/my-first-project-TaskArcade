@@ -1,6 +1,6 @@
 id,user_id,name,category,time_of_day,frequency,streak,streak_milestone
 1,1,Morning Stretch,Health,Morning,Daily,1,10
-2,1,5km Run,Fitness,Afternoon,Daily,1,5
+2,1,5km Run,Fitness,Afternoon,Daily,0,5
 3,1,Read 10 Pages,Mind,Evening,Daily,6,15
 4,2,Meditation,Mind,Morning,Daily,12,20
 5,2,Journaling,Mind,Evening,Daily,6,10

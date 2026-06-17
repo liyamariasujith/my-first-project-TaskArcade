@@ -19,7 +19,18 @@
 <body>
     <div class="app-container">
         <!-- Sidebar Navigation -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="app-sidebar">
+            <script>
+                (function() {
+                    const minimized = localStorage.getItem('sidebar-minimized');
+                    if (minimized === 'true') {
+                        document.getElementById('app-sidebar').classList.add('minimized');
+                    }
+                })();
+            </script>
+            <button id="sidebar-toggle-btn" class="sidebar-toggle-btn" aria-label="Toggle sidebar">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
             <div class="sidebar-header">
                 <div class="logo-icon">
                     <i class="fa-solid fa-bolt"></i>
@@ -556,6 +567,26 @@
             <div class="reward-description" id="reward-description">Rewards: +2 Streak Freezes</div>
             
             <button class="btn-primary btn-claim" id="btn-claim-reward">Claim Reward</button>
+        </div>
+    </div>
+
+    <!-- 7. WELCOME MODAL WINDOW -->
+    <div id="welcome-modal" class="welcome-modal-overlay hidden">
+        <div class="welcome-modal-content">
+            <div class="welcome-logo">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <h2>Welcome to ThinkingMind</h2>
+            <p>Let's personalize your habit tracking experience.</p>
+            <div class="welcome-modal-body">
+                <div class="input-group">
+                    <label for="welcome-name-input">What should we call you?</label>
+                    <input type="text" id="welcome-name-input" placeholder="Enter your name..." autocomplete="off">
+                </div>
+                <button id="welcome-submit-btn" class="welcome-submit-btn">
+                    <span>Let's Go!</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
         </div>
     </div>
 
