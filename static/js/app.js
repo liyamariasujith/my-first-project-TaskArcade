@@ -145,10 +145,22 @@ function setupEventListeners() {
     const welcomeSubmit = document.getElementById('welcome-submit-btn');
     
     if (welcomeModal && welcomeInput && welcomeSubmit) {
-        // Show welcome modal if no name is saved in localStorage
+        // Always show welcome modal on page load
+        welcomeModal.classList.remove('hidden');
+        
+        // Pre-fill input if there's a saved name
         const savedName = localStorage.getItem('user-welcome-name');
-        if (!savedName) {
-            welcomeModal.classList.remove('hidden');
+        if (savedName) {
+            welcomeInput.value = savedName;
+            // Focus the input and select text for premium UX
+            setTimeout(() => {
+                welcomeInput.focus();
+                welcomeInput.select();
+            }, 100);
+        } else {
+            setTimeout(() => {
+                welcomeInput.focus();
+            }, 100);
         }
         
         const handleWelcomeSubmit = () => {
