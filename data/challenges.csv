@@ -1,0 +1,6 @@
+id,title,description,participants_count,duration,category,active
+1,Summer 5K Run Challenge,Run 5km daily for 30 days.,12,30 days,Fitness,True
+2,Mindful Mornings,15 mins morning meditation to center your mind.,25,21 days,Mind,True
+3,Code & Brew,Refactor one block of code daily and share with the team.,8,14 days,Career,True
+4,Bookworm Marathon,Read 20 mins every night before sleep.,18,30 days,Mind,True
+5,Sketch Daily,Draw one doodle or sketch every single day.,14,15 days,Creative,True

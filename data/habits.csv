@@ -1,0 +1,16 @@
+id,user_id,name,category,time_of_day,frequency,streak,streak_milestone
+1,1,Morning Stretch,Health,Morning,Daily,1,10
+2,1,5km Run,Fitness,Afternoon,Daily,1,5
+3,1,Read 10 Pages,Mind,Evening,Daily,6,15
+4,2,Meditation,Mind,Morning,Daily,12,20
+5,2,Journaling,Mind,Evening,Daily,6,10
+6,2,Herbal Tea,Health,Evening,Daily,20,30
+7,3,Code Review,Career,Morning,Daily,4,5
+8,3,Drink 3L Water,Health,Afternoon,Daily,9,15
+9,3,Exercise,Fitness,Evening,Daily,2,5
+10,4,Vocabulary Practice,Mind,Morning,Daily,15,30
+11,4,Read Fiction,Mind,Afternoon,Daily,11,20
+12,4,Write Journal,Mind,Evening,Daily,0,5
+13,5,Sketching,Creative,Morning,Daily,18,20
+14,5,Cardio Workout,Fitness,Afternoon,Daily,4,10
+15,5,Sleep by 11 PM,Health,Evening,Daily,1,5

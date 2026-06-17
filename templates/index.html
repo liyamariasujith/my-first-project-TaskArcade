@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThinkingMind — Premium Habit Tracker</title>
+    <meta name="description" content="Track, analyze, and master your daily habits with a stunning, high-performance interface.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <h2>ThinkingMind</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard" id="btn-tab-dashboard">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-text">Today / Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="calendar" id="btn-tab-calendar">
+                    <span class="nav-icon">🗓️</span>
+                    <span class="nav-text">Habit Board</span>
+                </button>
+                <button class="nav-item" data-tab="insights" id="btn-tab-insights">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Insights & Analytics</span>
+                </button>
+                <button class="nav-item" data-tab="challenges" id="btn-tab-challenges">
+                    <span class="nav-icon">🏆</span>
+                    <span class="nav-text">Challenges</span>
+                </button>
+                <button class="nav-item" data-tab="profile" id="btn-tab-profile">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-text">User Profile</span>
+                </button>
+                <button class="nav-item" data-tab="games" id="btn-tab-games">
+                    <span class="nav-icon">🎮</span>
+                    <span class="nav-text">Games & Breaks</span>
+                </button>
+            </nav>
+            
+            <!-- User Switcher Widget -->
+            <div class="user-switcher-container">
+                <div class="user-card" id="current-user-card">
+                    <span class="user-avatar" id="current-user-avatar">🧘‍♀️</span>
+                    <div class="user-info">
+                        <span class="user-name" id="current-user-name">Aria Brooks</span>
+                        <span class="user-role">Member</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-up toggle-dropdown-icon"></i>
+                </div>
+                <div class="user-dropdown hidden" id="user-switcher-dropdown">
+                    <div class="dropdown-header">Switch User</div>
+                    <ul class="user-list" id="users-dropdown-list">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-welcome">
+                    <h1 id="welcome-text">Hello, Aria!</h1>
+                    <div class="header-welcome-meta">
+                        <p class="subtitle" id="header-date">Tuesday, June 16, 2026</p>
+                        <div class="header-rewards-container">
+                            <span class="header-reward-badge" title="Diamonds"><span class="badge-icon">💎</span> <span id="header-user-diamonds">24</span></span>
+                            <span class="header-reward-badge" title="Streak Freezes"><span class="badge-icon">❄️</span> <span id="header-user-freezes">2</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="mini-stat">
+                        <span class="label">Today's Progress</span>
+                        <span class="val" id="today-progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="today-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Views -->
+            <div class="view-viewport">
+                <!-- 1. TODAY / DASHBOARD -->
+                <section class="content-view active" id="dashboard-view">
+                    <div class="dashboard-grid">
+                        <div class="habits-section">
+                            <!-- Morning Habits -->
+                            <div class="time-block collapsible-block" id="morning-block">
+                                <button class="time-block-header" aria-label="Toggle Morning Habits">
+                                    <span class="title-text"><i class="fa-solid fa-sun morning-icon"></i> Morning Habits</span>
+                                    <i class="fa-solid fa-chevron-down expand-arrow"></i>
+                                </button>
+                                <div class="time-block-content" id="morning-content">
+                                    <div class="habit-list" id="morning-habit-list">
+                                        <!-- Populated by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Afternoon Habits -->
+                            <div class="time-block collapsible-block" id="afternoon-block">
+                                <button class="time-block-header" aria-label="Toggle Afternoon Habits">
+                                    <span class="title-text"><i class="fa-solid fa-cloud-sun afternoon-icon"></i> Afternoon Habits</span>
+                                    <i class="fa-solid fa-chevron-down expand-arrow"></i>
+                                </button>
+                                <div class="time-block-content" id="afternoon-content">
+                                    <div class="habit-list" id="afternoon-habit-list">
+                                        <!-- Populated by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Evening Habits -->
+                            <div class="time-block collapsible-block" id="evening-block">
+                                <button class="time-block-header" aria-label="Toggle Evening Habits">
+                                    <span class="title-text"><i class="fa-solid fa-moon evening-icon"></i> Evening Habits</span>
+                                    <i class="fa-solid fa-chevron-down expand-arrow"></i>
+                                </button>
+                                <div class="time-block-content" id="evening-content">
+                                    <div class="habit-list" id="evening-habit-list">
+                                        <!-- Populated by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-sidebar">
+                            <!-- Add Habit Widget -->
+                            <div class="widget glass-widget">
+                                <h3><i class="fa-solid fa-plus"></i> Create Habit</h3>
+                                <form id="add-habit-form" class="widget-form">
+                                    <div class="form-group">
+                                        <label for="habit-name">Habit Name</label>
+                                        <input type="text" id="habit-name" placeholder="e.g., Read for 20 mins" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="habit-category">Category</label>
+                                        <input type="text" id="habit-category" placeholder="e.g., Mind, Health, Fitness" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="habit-time">Time of Day</label>
+                                        <select id="habit-time">
+                                            <option value="Morning">Morning</option>
+                                            <option value="Afternoon">Afternoon</option>
+                                            <option value="Evening">Evening</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn-primary" id="btn-create-habit">Add Habit</button>
+                                </form>
+                            </div>
+                            
+                            <!-- Quick Stats Wheel -->
+                            <div class="widget glass-widget center-content">
+                                <h3>Daily Completion</h3>
+                                <div class="completion-wheel-container">
+                                    <svg viewBox="0 0 100 100" class="completion-wheel">
+                                        <circle cx="50" cy="50" r="40" class="wheel-bg" />
+                                        <circle cx="50" cy="50" r="40" class="wheel-progress" id="completion-wheel-ring" />
+                                    </svg>
+                                    <div class="wheel-text" id="completion-wheel-text">0/0</div>
+                                </div>
+                                <p class="widget-tip">Complete all habits to keep your streak burning! 🔥</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 2. CALENDAR / HABIT BOARD -->
+                <section class="content-view" id="calendar-view">
+                    <div class="habit-board-container">
+                        <div class="board-header">
+                            <h2>🗓️ Weekly Habit Board</h2>
+                            <p>Click any cell to toggle completions retrospectively for the past week.</p>
+                        </div>
+                        <div class="board-filters-wrapper">
+                            <span class="filter-label">Filter Category:</span>
+                            <div class="board-filters" id="board-category-filters">
+                                <button class="filter-btn active" data-category="All">All</button>
+                                <button class="filter-btn" data-category="Mind">🧠 Mind</button>
+                                <button class="filter-btn" data-category="Health">🍏 Health</button>
+                                <button class="filter-btn" data-category="Fitness">💪 Fitness</button>
+                            </div>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="habit-board-table" id="weekly-board-table">
+                                <!-- Populated by JS -->
+                            </table>
+                        </div>
+                        
+                        <div class="monthly-consistency-container">
+                            <h2>🔥 Month Completion Heatmap</h2>
+                            <p>Overall completion rates across the last 30 days.</p>
+                            <div class="heatmap-grid" id="month-heatmap-grid">
+                                <!-- Populated by JS -->
+                            </div>
+                            <div class="heatmap-legend">
+                                <span>Less Consistent</span>
+                                <div class="legend-box level-0"></div>
+                                <div class="legend-box level-1"></div>
+                                <div class="legend-box level-2"></div>
+                                <div class="legend-box level-3"></div>
+                                <div class="legend-box level-4"></div>
+                                <span>More Consistent</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 3. INSIGHTS & ANALYTICS -->
+                <section class="content-view" id="insights-view">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-check-double"></i></div>
+                            <div class="stat-data">
+                                <span class="stat-val" id="analytics-total-completions">0</span>
+                                <span class="stat-label">Total Completions</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-fire text-orange"></i></div>
+                            <div class="stat-data">
+                                <span class="stat-val" id="analytics-best-streak">0</span>
+                                <span class="stat-label">Best Streak Milestone</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-chart-line text-blue"></i></div>
+                            <div class="stat-data">
+                                <span class="stat-val" id="analytics-weekly-rate">0%</span>
+                                <span class="stat-label">Completion Rate (7d)</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-sparkles text-purple"></i></div>
+                            <div class="stat-data">
+                                <span class="stat-val" id="analytics-active-habits">0</span>
+                                <span class="stat-label">Active Habits</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3>📊 Category Distribution</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>📈 Completion Trend (Last 7 Days)</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 4. CHALLENGES -->
+                <section class="content-view" id="challenges-view">
+                    <div class="challenges-grid-layout">
+                        <div class="challenges-content">
+                            <div class="section-title-wrapper">
+                                <h2>🏆 Active Accountability Challenges</h2>
+                                <p>Join community challenges to stay consistent together with other members.</p>
+                            </div>
+                            <div class="challenges-grid" id="challenges-list-grid">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <div class="leaderboard-sidebar-wrapper">
+                            <div class="widget glass-widget">
+                                <h3>🎖️ Global Leaderboard</h3>
+                                <p class="widget-subtitle">All-time completion champions</p>
+                                <ol class="leaderboard-list" id="leaderboard-ranking-list">
+                                    <!-- Populated by JS -->
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 5. USER PROFILE -->
+                <section class="content-view" id="profile-view">
+                    <div class="profile-card-container">
+                        <div class="profile-header-banner"></div>
+                        <div class="profile-info-section">
+                            <div class="profile-avatar-large" id="profile-avatar">🧘‍♀️</div>
+                            <div class="profile-details">
+                                <h2 id="profile-full-name">Aria Brooks</h2>
+                                <p class="profile-username" id="profile-username-tag">@aria</p>
+                                <p class="profile-bio" id="profile-bio-text">Mindfulness guide, yoga practitioner, and tea lover.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-achievements">
+                            <h3>🏆 Streak Milestones & Badges</h3>
+                            <div class="badges-grid" id="profile-badges-grid">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 6. GAMES & BREAKS VIEW -->
+                <section class="content-view" id="games-view">
+                    <div class="games-layout">
+                        <!-- Break Timer Header Badge -->
+                        <div class="timer-control-panel glass-widget">
+                            <div class="timer-display-col">
+                                <span class="timer-icon">⏱️</span>
+                                <div class="timer-time-group">
+                                    <span class="timer-countdown" id="break-timer-clock">10:00</span>
+                                    <span class="timer-label">Break Time Remaining</span>
+                                </div>
+                            </div>
+                            <div class="timer-purchase-actions">
+                                <button class="btn-primary btn-buy-time" id="btn-buy-2m" data-mins="2" data-cost="30">
+                                    Buy +2 Min <span class="gem-cost">💎 30</span>
+                                </button>
+                                <button class="btn-primary btn-buy-time" id="btn-buy-5m" data-mins="5" data-cost="70">
+                                    Buy +5 Min <span class="gem-cost">💎 70</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Game Area -->
+                        <div class="games-grid-container" id="games-grid-area">
+                            <!-- Game 1: Guess in 6 (Country edition) -->
+                            <div class="game-card glass-widget" id="game-guess-10">
+                                <div class="game-header">
+                                    <h3>🧠 Guess in 6: Cryptic Country Edition</h3>
+                                    <p class="game-subtitle">Reveal clues and guess the country before running out of attempts!</p>
+                                </div>
+                                <div class="game-body">
+                                    <!-- Clue List -->
+                                    <div class="clue-board">
+                                        <div class="clue-header-row">
+                                            <span>Revealed Clues (<span id="guess-clue-count">0</span>/6):</span>
+                                            <div style="display: flex; gap: 8px;">
+                                                <button class="btn-primary btn-sm" id="btn-reveal-clue">Get Clue</button>
+                                                <button class="btn-secondary btn-sm" id="btn-guess-buy-hint">Buy Hint (💎 5)</button>
+                                            </div>
+                                        </div>
+                                        <ul class="clues-list" id="guess-clues-list">
+                                            <li class="clue-placeholder">Click 'Get Clue' to begin!</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Guess Input Form -->
+                                    <div class="guess-form-container">
+                                        <form id="guess-country-form" class="widget-form inline-form">
+                                            <div class="form-group flex-grow-1">
+                                                <input type="text" id="input-country-guess" placeholder="Type country name..." required>
+                                            </div>
+                                            <button type="submit" class="btn-primary" id="btn-submit-guess">Submit Guess</button>
+                                        </form>
+                                        <div class="game-status-msg" id="guess-game-status"></div>
+                                    </div>
+                                </div>
+                                <div class="game-footer">
+                                    <button class="btn-secondary" id="btn-restart-guess">New Game</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Game 2: Habits Word Search -->
+                            <div class="game-card glass-widget" id="game-word-search">
+                                <div class="game-header">
+                                    <h3>🔍 Habit Word Search</h3>
+                                    <p class="game-subtitle">Find the words in the grid. Click letters to select!</p>
+                                </div>
+                                <div class="game-body wordsearch-flex">
+                                    <div class="wordsearch-grid" id="wordsearch-grid-board">
+                                        <!-- Built dynamically in JS -->
+                                    </div>
+                                    <div class="wordsearch-wordlist">
+                                        <h4>Words to Find:</h4>
+                                        <ul class="word-list" id="wordsearch-words-ul">
+                                            <!-- Words dynamically added -->
+                                        </ul>
+                                        <div class="game-status-msg" id="wordsearch-status"></div>
+                                    </div>
+                                </div>
+                                <div class="game-footer">
+                                    <button class="btn-secondary" id="btn-restart-wordsearch">New Game</button>
+                                    <button class="btn-primary" style="margin-left: 10px;" id="btn-wordsearch-buy-hint">Buy Hint (💎 5)</button>
+                                </div>
+                            </div>
+
+                            <!-- Game 3: Break Sudoku -->
+                            <div class="game-card glass-widget" id="game-sudoku">
+                                <div class="game-header">
+                                    <h3>🔢 Break Sudoku</h3>
+                                    <p class="game-subtitle">Fill the 9x9 grid so that every row, column, and 3x3 box contains digits 1-9.</p>
+                                </div>
+                                <div class="game-body sudoku-flex">
+                                    <div class="sudoku-container">
+                                        <div class="sudoku-grid" id="sudoku-grid-board">
+                                            <!-- Generated dynamically in JS -->
+                                        </div>
+                                        <!-- Number pad -->
+                                        <div class="sudoku-numpad">
+                                            <button class="btn-numpad" data-val="1">1</button>
+                                            <button class="btn-numpad" data-val="2">2</button>
+                                            <button class="btn-numpad" data-val="3">3</button>
+                                            <button class="btn-numpad" data-val="4">4</button>
+                                            <button class="btn-numpad" data-val="5">5</button>
+                                            <button class="btn-numpad" data-val="6">6</button>
+                                            <button class="btn-numpad" data-val="7">7</button>
+                                            <button class="btn-numpad" data-val="8">8</button>
+                                            <button class="btn-numpad" data-val="9">9</button>
+                                            <button class="btn-numpad erase" data-val="0">Erase</button>
+                                        </div>
+                                    </div>
+                                    <div class="sudoku-info" style="width: 100%;">
+                                        <div class="game-status-msg" id="sudoku-status"></div>
+                                    </div>
+                                </div>
+                                <div class="game-footer">
+                                    <button class="btn-secondary" id="btn-restart-sudoku">New Game</button>
+                                    <button class="btn-primary" style="margin-left: 10px;" id="btn-sudoku-buy-hint">Buy Hint (💎 5)</button>
+                                    <button class="btn-primary" style="margin-left: 10px;" id="btn-check-sudoku">Check Solution</button>
+                                </div>
+                            </div>
+
+                            <!-- Game 4: Habits Wordcross -->
+                            <div class="game-card glass-widget" id="game-wordcross">
+                                <div class="game-header">
+                                    <h3>🧩 Habit Wordcross</h3>
+                                    <p class="game-subtitle">Solve this mini-crossword puzzle by entering letters in the grid.</p>
+                                </div>
+                                <div class="game-body wordcross-flex-layout">
+                                    <div class="wordcross-grid" id="wordcross-grid-board">
+                                        <!-- Generated dynamically in JS -->
+                                    </div>
+                                    <div class="wordcross-clues">
+                                        <div class="clues-col">
+                                            <h4>Across</h4>
+                                            <ul id="wordcross-clues-across"></ul>
+                                        </div>
+                                        <div class="clues-col">
+                                            <h4>Down</h4>
+                                            <ul id="wordcross-clues-down"></ul>
+                                        </div>
+                                    </div>
+                                    <div class="game-status-msg" id="wordcross-status" style="width: 100%; margin-top: 15px;"></div>
+                                </div>
+                                <div class="game-footer">
+                                    <button class="btn-secondary" id="btn-restart-wordcross">New Game</button>
+                                    <button class="btn-primary" style="margin-left: 10px;" id="btn-wordcross-buy-hint">Buy Hint (💎 5)</button>
+                                    <button class="btn-primary" style="margin-left: 10px;" id="btn-check-wordcross">Check Crossword</button>
+                                </div>
+                            </div>
+
+                            <!-- Game 5: Quick Math Sums -->
+                            <div class="game-card glass-widget" id="game-math">
+                                <div class="game-header">
+                                    <h3>➕ Quick Math Sums</h3>
+                                    <p class="game-subtitle">Solve 10 random arithmetic questions. Score 8/10 or more to win diamonds!</p>
+                                </div>
+                                <div class="game-body math-game-body" style="text-align: center;">
+                                    <div class="math-question-header" style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px;">
+                                        <span>Question <span id="math-current-q">1</span>/10</span>
+                                        <span>Correct: <span id="math-score">0</span></span>
+                                    </div>
+                                    <div class="math-equation-display" style="font-size: 48px; font-weight: 800; color: var(--text-primary); margin: 20px 0; font-family: monospace;">
+                                        <span id="math-num1">23</span>
+                                        <span id="math-operator">+</span>
+                                        <span id="math-num2">45</span>
+                                        <span>=</span>
+                                    </div>
+                                    <div class="math-input-container" style="max-width: 200px; margin: 0 auto 20px auto;">
+                                        <input type="number" id="input-math-answer" placeholder="?" style="width: 100%; text-align: center; font-size: 24px; font-weight: 700; padding: 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); color: var(--text-primary); outline: none;" required>
+                                    </div>
+                                    <div class="game-status-msg" id="math-status" style="margin-bottom: 15px;"></div>
+                                </div>
+                                <div class="game-footer">
+                                    <button class="btn-secondary" id="btn-restart-math">Restart Game</button>
+                                    <button class="btn-primary" style="margin-left: 10px;" id="btn-math-buy-hint">Reveal Answer (💎 5)</button>
+                                    <button class="btn-primary" style="margin-left: 10px;" id="btn-submit-math">Submit Answer</button>
+                                </div>
+                            </div>
+
+                            <!-- Game 6: Tic Tac Toe -->
+                            <div class="game-card glass-widget" id="game-ttt">
+                                <div class="game-header">
+                                    <h3>❌ Tic Tac Toe: Bot Edition</h3>
+                                    <p class="game-subtitle">Play against the Bot. Win the game to earn diamonds!</p>
+                                </div>
+                                <div class="game-body ttt-flex-layout" style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                                    <div class="ttt-grid" id="ttt-grid-board">
+                                        <!-- 3x3 dynamically generated in JS -->
+                                    </div>
+                                    <div class="game-status-msg" id="ttt-status">Your turn (X)</div>
+                                </div>
+                                <div class="game-footer">
+                                    <button class="btn-secondary" id="btn-restart-ttt">New Game</button>
+                                    <button class="btn-primary" style="margin-left: 10px;" id="btn-ttt-buy-hint">Best Move (💎 5)</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Overlay when break timer runs out -->
+                        <div class="times-up-overlay hidden" id="break-times-up-overlay">
+                            <div class="times-up-content">
+                                <span class="lock-icon">🔒</span>
+                                <h2>Break Time's Up!</h2>
+                                <p>Your 10-minute break timer has run out. Go back to completing your habits or buy more break time using your diamonds!</p>
+                                <div class="overlay-actions">
+                                    <button class="btn-primary" id="btn-overlay-buy-2m">Buy +2 Min (💎 30)</button>
+                                    <button class="btn-primary" id="btn-overlay-buy-5m">Buy +5 Min (💎 70)</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 6. TREASURE CHEST MODAL POPUP -->
+    <div class="modal-overlay hidden" id="reward-modal-overlay">
+        <div class="reward-modal-container">
+            <div class="reward-glow-effect"></div>
+            <h2 class="reward-modal-title">Chest Discovered!</h2>
+            
+            <div class="chest-visual-container">
+                <span class="chest-emoji" id="reward-chest-emoji">📦</span>
+                <div class="chest-sparkles">
+                    <span class="sparkle">✨</span>
+                    <span class="sparkle">⭐</span>
+                    <span class="sparkle">✨</span>
+                </div>
+            </div>
+            
+            <div class="reward-chest-type" id="reward-chest-type">Super Giant Chest</div>
+            <div class="reward-description" id="reward-description">Rewards: +2 Streak Freezes</div>
+            
+            <button class="btn-primary btn-claim" id="btn-claim-reward">Claim Reward</button>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
