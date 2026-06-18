@@ -59,6 +59,10 @@
                     <span class="nav-icon">👤</span>
                     <span class="nav-text">User Profile</span>
                 </button>
+                <button class="nav-item" data-tab="coach" id="btn-tab-coach">
+                    <span class="nav-icon">🧠</span>
+                    <span class="nav-text">Mindset Coach</span>
+                </button>
                 <button class="nav-item" data-tab="games" id="btn-tab-games">
                     <span class="nav-icon">🎮</span>
                     <span class="nav-text">Games & Breaks</span>
@@ -332,6 +336,48 @@
                     </div>
                 </section>
                 
+                <!-- 5. MINDSET COACH VIEW -->
+                <section class="content-view" id="coach-view">
+                    <div class="coach-layout">
+                        <div class="coach-header glass-widget">
+                            <div class="coach-info-left">
+                                <div class="coach-avatar-badge">🧠</div>
+                                <div class="coach-title-group">
+                                    <h3>MindsetCoach</h3>
+                                    <span class="coach-status-tag"><span class="status-dot"></span> Empathetic Productivity Partner</span>
+                                </div>
+                            </div>
+                            <div class="coach-info-right">
+                                <span class="api-status-badge" id="coach-api-status"><span class="badge-dot"></span> Powered by Google ADK 2.0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="coach-chat-container glass-widget">
+                            <div class="chat-messages" id="coach-chat-messages">
+                                <div class="message system">
+                                    <span class="msg-icon">🧠</span>
+                                    <div class="msg-bubble">
+                                        <p>Hello! I am your <strong>MindsetCoach</strong>, powered by Google's agentic framework. I can help you stay consistent with your habits, brainstorm strategies when you miss them, or even add/modify habits directly! How are you feeling about your progress today?</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-quick-replies" id="coach-quick-replies">
+                                <button class="quick-reply-btn" data-text="I missed a habit today, help me reset.">Missed a habit 🔄</button>
+                                <button class="quick-reply-btn" data-text="How is my overall consistency looking?">Check my stats 📊</button>
+                                <button class="quick-reply-btn" data-text="Create a new habit for me: Sleep 8 hours every night.">Create a habit ➕</button>
+                            </div>
+                            
+                            <div class="chat-input-area">
+                                <input type="text" id="coach-chat-input" placeholder="Type a message to your coach..." autocomplete="off">
+                                <button id="coach-send-btn" class="btn-primary coach-send-btn">
+                                    <span>Send</span> <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- 6. GAMES & BREAKS VIEW -->
                 <section class="content-view" id="games-view">
                     <div class="games-layout">

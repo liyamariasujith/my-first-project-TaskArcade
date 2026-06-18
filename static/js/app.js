@@ -192,6 +192,133 @@ function setupEventListeners() {
             }
         });
     }
+
+    // Mindset Coach Chat Listeners
+    const coachInput = document.getElementById('coach-chat-input');
+    const coachSendBtn = document.getElementById('coach-send-btn');
+    const coachMessages = document.getElementById('coach-chat-messages');
+    
+    const appendCoachMessage = (sender, text, isSystem = false) => {
+        if (!coachMessages) return;
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender === 'user' ? 'user' : 'system'}`;
+        
+        const avatar = document.createElement('span');
+        avatar.className = 'msg-icon';
+        avatar.textContent = sender === 'user' ? (currentUser ? currentUser.avatar : '👤') : '🧠';
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble';
+        
+        if (isSystem) {
+            bubble.innerHTML = `<p style="color: var(--text-secondary); font-style: italic;">${text}</p>`;
+        } else {
+            // Premium markdown list and bold formatter
+            let formattedText = text
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>');
+            bubble.innerHTML = `<p>${formattedText}</p>`;
+        }
+        
+        msgDiv.appendChild(avatar);
+        msgDiv.appendChild(bubble);
+        coachMessages.appendChild(msgDiv);
+        coachMessages.scrollTop = coachMessages.scrollHeight;
+    };
+
+    const showCoachTypingIndicator = () => {
+        if (!coachMessages) return null;
+        const indicator = document.createElement('div');
+        indicator.className = 'message system typing-indicator';
+        indicator.id = 'coach-typing-indicator';
+        
+        const avatar = document.createElement('span');
+        avatar.className = 'msg-icon';
+        avatar.textContent = '🧠';
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble';
+        bubble.innerHTML = `
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        `;
+        
+        indicator.appendChild(avatar);
+        indicator.appendChild(bubble);
+        coachMessages.appendChild(indicator);
+        coachMessages.scrollTop = coachMessages.scrollHeight;
+        return indicator;
+    };
+    
+    const sendChatMessageToCoach = () => {
+        if (!coachInput) return;
+        const message = coachInput.value.trim();
+        if (!message) return;
+        
+        // Clear input
+        coachInput.value = '';
+        
+        // Append user message
+        appendCoachMessage('user', message);
+        
+        // Show typing indicator
+        const indicator = showCoachTypingIndicator();
+        
+        // Make API post call
+        fetch('/api/coach/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: currentUser ? currentUser.id : '1',
+                message: message
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            // Remove typing indicator
+            if (indicator) indicator.remove();
+            
+            if (data.status === 'success') {
+                appendCoachMessage('coach', data.reply);
+                // Refresh local user data in background in case coach modified habits/completions/etc.
+                loadUserData();
+            } else {
+                appendCoachMessage('coach', data.message || 'An error occurred.', true);
+            }
+        })
+        .catch(err => {
+            if (indicator) indicator.remove();
+            console.error('Error chatting with coach:', err);
+            appendCoachMessage('coach', 'Unable to reach the coach. Please check your connection.', true);
+        });
+    };
+    
+    if (coachSendBtn && coachInput) {
+        coachSendBtn.addEventListener('click', sendChatMessageToCoach);
+        coachInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendChatMessageToCoach();
+            }
+        });
+    }
+    
+    // Quick Replies
+    const quickReplyButtons = document.querySelectorAll('.quick-reply-btn');
+    quickReplyButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (coachInput) {
+                coachInput.value = e.currentTarget.getAttribute('data-text');
+                sendChatMessageToCoach();
+            }
+        });
+    });
 }
 
 function switchTab(tabName) {
@@ -222,6 +349,12 @@ function switchTab(tabName) {
     } else if (tabName === 'profile') {
         pauseBreakTimer();
         renderProfile();
+    } else if (tabName === 'coach') {
+        pauseBreakTimer();
+        const chatMessagesEl = document.getElementById('coach-chat-messages');
+        if (chatMessagesEl) {
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
     } else if (tabName === 'games') {
         startBreakTimer();
         initGamesSection();

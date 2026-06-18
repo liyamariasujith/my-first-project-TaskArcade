@@ -354,5 +354,29 @@ def get_leaderboard():
     leaderboard = sorted(leaderboard, key=lambda x: x['completions_count'], reverse=True)
     return jsonify(leaderboard)
 
+# API: Mindset Coach Chat
+@app.route('/api/coach/chat', methods=['POST'])
+def coach_chat():
+    from coach import ask_coach
+    data = request.json or {}
+    user_id = str(data.get('user_id', ''))
+    message = data.get('message', '').strip()
+    
+    if not user_id or not message:
+        return jsonify({'status': 'error', 'message': 'Missing user_id or message'}), 400
+        
+    reply = ask_coach(user_id, message)
+    
+    if reply == "ERROR_MISSING_API_KEY":
+        return jsonify({
+            'status': 'error',
+            'message': 'Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable or create a .env file in the project root.'
+        })
+        
+    return jsonify({
+        'status': 'success',
+        'reply': reply
+    })
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
